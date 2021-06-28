@@ -29,9 +29,13 @@ def readAndRescale(img1, img2, scale):
     width = int(target.shape[1] * scale)
     height = int(source.shape[0] * scale)
     dim = (width, height)
+    print(f"resizing input images to dim: {dim}")
 
     target_s = cv2.resize(target, dim, interpolation=cv2.INTER_AREA)
     source_s = cv2.resize(source, dim, interpolation=cv2.INTER_AREA)
+
+    target_s = cv2.normalize(target_s, target_s, 0, 255, cv2.NORM_MINMAX) # require normalised hist for SIFT
+    source_s = cv2.normalize(source_s, source_s, 0, 255, cv2.NORM_MINMAX)
 
     # cv2.cvtColor() method is used to convert an image from one color space to another, here 3 band to 1 band
     gray1 = cv2.cvtColor(target_s, cv2.COLOR_BGR2GRAY)
@@ -49,11 +53,11 @@ def getKeypointAndDescriptors(target_gray, source_gray):
     target_gray, source_gray: grayscaled target and source images as np.ndarray
     """
     sift = cv2.SIFT_create()
-    kp1, des1 = sift.detectAndCompute(target_gray, None)
+    kp1, des1 = sift.detectAndCompute(target_gray.astype('uint8'), None)
     pts1 = np.array([kp1[idx].pt for idx in range(len(kp1))])
     print(f"len(pts1): {len(pts1)}")
 
-    kp2, des2 = sift.detectAndCompute(source_gray, None)
+    kp2, des2 = sift.detectAndCompute(source_gray.astype('uint8'), None)
     pts2 = np.array([kp2[idx].pt for idx in range(len(kp2))])
     print(f"len(pts2): {len(pts2)}")
 
