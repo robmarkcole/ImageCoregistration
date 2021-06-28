@@ -3,3 +3,13 @@ __pycache__/
 *.py[cod]
 *$py.class
 venv*
+
+data/*
+.DS_Store
+*.jpg
+result/*.jpg
+result/matches.jpg
+result/source_new.jpg
+result/target_new.jpg
+result/joint_histogram.jpg
+result/matches.jpg
