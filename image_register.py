@@ -22,7 +22,9 @@ def readAndRescale(img1, img2, scale):
     scale: scaling factor, keeping aspect ratio
     """
     target = cv2.imread(os.path.join("data", img1))
+    print(f"target shape: {target.shape}")
     source = cv2.imread(os.path.join("data", img2))
+    print(f"source shape: {source.shape}")
 
     width = int(target.shape[1] * scale)
     height = int(source.shape[0] * scale)
@@ -31,9 +33,9 @@ def readAndRescale(img1, img2, scale):
     target_s = cv2.resize(target, dim, interpolation=cv2.INTER_AREA)
     source_s = cv2.resize(source, dim, interpolation=cv2.INTER_AREA)
 
+    # cv2.cvtColor() method is used to convert an image from one color space to another, here 3 band to 1 band
     gray1 = cv2.cvtColor(target_s, cv2.COLOR_BGR2GRAY)
     gray2 = cv2.cvtColor(source_s, cv2.COLOR_BGR2GRAY)
-
     return target_s, source_s, gray1, gray2, target, source
 
 
@@ -49,8 +51,14 @@ def getKeypointAndDescriptors(target_gray, source_gray):
     sift = cv2.SIFT_create()
     kp1, des1 = sift.detectAndCompute(target_gray, None)
     pts1 = np.array([kp1[idx].pt for idx in range(len(kp1))])
+    print(f"len(pts1): {len(pts1)}")
+
     kp2, des2 = sift.detectAndCompute(source_gray, None)
     pts2 = np.array([kp2[idx].pt for idx in range(len(kp2))])
+    print(f"len(pts2): {len(pts2)}")
+
+    if not (len(pts2) & len(pts2)):
+        raise Exception(f"No pts")
     return pts1, pts2, des1, des2
 
 
@@ -61,7 +69,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "-s",
         "--scale",
-        default=0.1,
+        default=1.0,
         type=float,
         help="rescale the images with this factor in range [0, 1]",
     )
